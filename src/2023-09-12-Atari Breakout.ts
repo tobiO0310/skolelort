@@ -4,6 +4,27 @@ import * as p5 from "p5";
 const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(val, max));
 
+function getVectorForCollision(
+    p: p5,
+    rect: p5.Vector,
+    size: p5.Vector,
+    circle: p5.Vector
+): p5.Vector {
+    const vec = p.createVector(rect.x - circle.x, rect.y - circle.y);
+    vec.x =
+        circle.x < rect.x
+            ? clamp(vec.x, 0, rect.x - circle.x)
+            : circle.x > rect.x + size.x
+            ? clamp(vec.x, rect.x + size.x - circle.x, 0)
+            : 0;
+    vec.y =
+        circle.y < rect.y
+            ? clamp(vec.y, 0, rect.y - circle.y)
+            : circle.y > rect.y + size.y
+            ? clamp(vec.y, rect.y + size.y - circle.y, 0)
+            : 0;
+    return vec;
+}
 /*
 Use vectors to test distance between circle and closest edge.
  */
@@ -14,14 +35,7 @@ function collideRectCircleVector(
     circle: p5.Vector,
     radius: number
 ) {
-    const vec = p.createVector(rect.x - circle.x, rect.y - circle.y);
-    vec.x =
-        circle.x < rect.x
-            ? clamp(vec.x, 0, rect.x - circle.x)
-            : circle.x > rect.x + size.x
-            ? clamp(vec.x, rect.x + size.x - circle.x, 0)
-            : 0;
-
+    const vec = getVectorForCollision(p, rect, size, circle);
     return vec.mag() < radius;
 }
 
@@ -36,8 +50,44 @@ export const sketch = (p: p5) => {
     };
 
     // Color order from top to bottom: red, orange, yellow, green, blue, purple
+    const colorCodes: { [n: number]: `#${string}` } = {
+        0: "#F56565",
+        1: "#ED8936",
+        2: "#ECC94B",
+        3: "#48BB78",
+        4: "#4299E1",
+        5: "#667EEA",
+    };
     // Totals: 10x6
-    const bricks = [];
+    const bricks: {
+        pos: p5.Vector;
+        size: p5.Vector;
+        active: boolean;
+        color: number;
+    }[] = [];
+
+    function refreshBricks() {
+        bricks.splice(0, bricks.length); //Remove all
+        for (let x = 0; x < 10; x++) {
+            for (let y = 0; y < 6; y++) {
+                // x: 2/20 - 19/20
+                // p.width/20(2 + 1.75*x)
+                // y: 2/10-5/10
+                // p.height/10(2+.45*x)
+
+                bricks.push({
+                    pos: p.createVector(
+                        (p.width / 20) * (1 + 1.75 * x),
+                        (p.height / 10) * (2 + 0.45 * y)
+                    ),
+                    size: p.createVector(p.width / 12, p.height / 45),
+                    active: true,
+                    color: y,
+                });
+            }
+        }
+        console.log(bricks);
+    }
 
     const ball = {
         pos: p.createVector(200, 200),
@@ -56,6 +106,9 @@ export const sketch = (p: p5) => {
         p.createCanvas(p.windowWidth * 0.9, p.windowHeight * 0.9); // 400, 400
         rect.pos.set((p.width * 4) / 10, (p.height * 9) / 10);
         rect.size.x = (p.width * 2) / 10;
+        ball.radius = 25 / 671.4 * p.height;
+
+        refreshBricks();
     };
 
     p.draw = function () {
@@ -120,6 +173,7 @@ export const sketch = (p: p5) => {
             ball.dir.set(p.random(-0.01, 0.01), -1);
             ball.dir.normalize().mult(ball.speed);
             ball.point = 0;
+            refreshBricks();
         } else if (
             collideRectCircleVector(
                 p,
@@ -137,17 +191,8 @@ export const sketch = (p: p5) => {
                     rect.pos.y + rect.size.y / 2
                 )
             );
-            ball.point++;
-            ball.pos.set(
-                ball.pos.x,
-                clamp(ball.pos.y, ball.radius, rect.pos.y - ball.radius)
-            );
             ball.dir.set(newDir).normalize().mult(ball.speed);
-
-            ball.speed =
-                ball.origiSpeed + 10 / (1 + 50 * Math.exp(-ball.point));
-            console.log(ball.speed);
-        } else if (ball.point === 10) {
+        } else if (ball.point === 60) {
             console.log("won");
         }
         ball.pos.set(
@@ -155,10 +200,40 @@ export const sketch = (p: p5) => {
             clamp(ball.pos.y, ball.radius, p.height - ball.radius)
         );
 
+        // Draw bricks, if active, and test if collides with ball.
+        bricks.forEach((brick) => {
+            if (brick.active === false) return;
+            p.fill(colorCodes[brick.color]);
+            p.rect(brick.pos.x, brick.pos.y, brick.size.x, brick.size.y);
+            if (
+                collideRectCircleVector(
+                    p,
+                    brick.pos,
+                    brick.size,
+                    ball.pos,
+                    ball.radius
+                )
+            ) {
+                // Colliding with rect
+                const line = getVectorForCollision(p, brick.pos, brick.size, ball.pos);
+                p.line(ball.pos.x, ball.pos.y, ball.pos.x+line.x,ball.pos.y+line.y);
+                brick.active = false;
+                ball.dir.reflect(line);
+                ball.point++;
+                ball.speed =
+                    ball.origiSpeed +
+                    10 / (1 + 23 * Math.exp(-0.1 * ball.point));
+            }
+        });
+
         p.fill("#D4A373");
         p.textAlign(p.CENTER);
         p.textSize(p.height / 10);
-        p.text(`Point: ${ball.point}`, p.width * (8 / 10), p.height * (2 / 10));
+        p.text(
+            `Point: ${ball.point}`,
+            p.width * (8 / 10),
+            p.height * (1.5 / 10)
+        );
     };
 };
 
