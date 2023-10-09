@@ -4,6 +4,7 @@ import * as p5 from "p5";
 const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(val, max));
 
+// LOOK AT THE F**KING NAME OF THE FUNCTION
 function getVectorForCollision(
     p: p5,
     rect: p5.Vector,
@@ -25,9 +26,8 @@ function getVectorForCollision(
             : 0;
     return vec;
 }
-/*
-Use vectors to test distance between circle and closest edge.
- */
+
+// Use vectors to test distance between circle and closest edge. (if you couldn't read the function name)
 function collideRectCircleVector(
     p: p5,
     rect: p5.Vector,
@@ -42,7 +42,9 @@ function collideRectCircleVector(
 // Color palette:
 // https://coolors.co/palette/ccd5ae-e9edc9-fefae0-faedcd-d4a373
 
+// woah!
 export const sketch = (p: p5) => {
+    // guess what it is
     const rect = {
         pos: p.createVector(200, 200),
         size: p.createVector(200, 10),
@@ -66,6 +68,7 @@ export const sketch = (p: p5) => {
         color: number;
     }[] = [];
 
+    // bet you can't guess what this function does
     function refreshBricks() {
         bricks.splice(0, bricks.length); //Remove all
         for (let x = 0; x < 10; x++) {
@@ -89,6 +92,7 @@ export const sketch = (p: p5) => {
         console.log(bricks);
     }
 
+    // dumbass <3
     const ball = {
         pos: p.createVector(200, 200),
         dir: p.createVector(p.random(-0.01, 0.01), -1),
@@ -100,10 +104,13 @@ export const sketch = (p: p5) => {
     };
     ball.dir.normalize().mult(ball.speed);
 
+    // fuck p5js
     p.setup = function () {
+        // im not gonna comment on anything in here
+        // you're a p***y for not understanding
         p.angleMode(p.DEGREES);
         p.frameRate(60);
-        p.createCanvas(p.windowWidth * 0.9, p.windowHeight * 0.9); // 400, 400
+        p.createCanvas(p.windowWidth * 0.9, p.windowHeight * 0.9);
         rect.pos.set((p.width * 4) / 10, (p.height * 9) / 10);
         rect.size.x = (p.width * 2) / 10;
         ball.radius = (25 / 671.4) * p.height;
@@ -111,7 +118,9 @@ export const sketch = (p: p5) => {
         refreshBricks();
     };
 
+    // like actually fuck p5js
     p.draw = function () {
+        //there's too much to comment, i might do it later
         p.background("#CCD5AE");
 
         p.fill("#FAEDCD");
