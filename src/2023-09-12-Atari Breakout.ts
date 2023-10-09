@@ -106,7 +106,7 @@ export const sketch = (p: p5) => {
         p.createCanvas(p.windowWidth * 0.9, p.windowHeight * 0.9); // 400, 400
         rect.pos.set((p.width * 4) / 10, (p.height * 9) / 10);
         rect.size.x = (p.width * 2) / 10;
-        ball.radius = 25 / 671.4 * p.height;
+        ball.radius = (25 / 671.4) * p.height;
 
         refreshBricks();
     };
@@ -215,8 +215,18 @@ export const sketch = (p: p5) => {
                 )
             ) {
                 // Colliding with rect
-                const line = getVectorForCollision(p, brick.pos, brick.size, ball.pos);
-                p.line(ball.pos.x, ball.pos.y, ball.pos.x+line.x,ball.pos.y+line.y);
+                const line = getVectorForCollision(
+                    p,
+                    brick.pos,
+                    brick.size,
+                    ball.pos
+                );
+                p.line(
+                    ball.pos.x,
+                    ball.pos.y,
+                    ball.pos.x + line.x,
+                    ball.pos.y + line.y
+                );
                 brick.active = false;
                 ball.dir.reflect(line);
                 ball.point++;
