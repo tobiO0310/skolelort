@@ -5,6 +5,10 @@ const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(val, max));
 
 // LOOK AT THE F**KING NAME OF THE FUNCTION
+// Basically checks if circle centrum is on either side of the rect's min and max x.
+// If it is, then clamp to that, if not then set to 0, as it's within the boundaries
+// and therefore is it closest to go straight up or down.
+// Then does the same for y.
 function getVectorForCollision(
     p: p5,
     rect: p5.Vector,
@@ -44,7 +48,7 @@ function collideRectCircleVector(
 
 // woah!
 export const sketch = (p: p5) => {
-    // guess what it is
+    // guess what it is (check setup for properties)
     const rect = {
         pos: p.createVector(200, 200),
         size: p.createVector(200, 10),
@@ -92,12 +96,13 @@ export const sketch = (p: p5) => {
         console.log(bricks);
     }
 
-    // dumbass <3
+    // dumbass <3 (check setup for properties)
     const ball = {
         pos: p.createVector(200, 200),
         dir: p.createVector(p.random(-0.01, 0.01), -1),
         radius: 25,
         speed: 5,
+        maxSpeed: 15,
         origiSpeed: 5,
         point: 0,
         started: false,
@@ -165,9 +170,7 @@ export const sketch = (p: p5) => {
         if (ball.pos.x < ball.radius || ball.pos.x > p.width - ball.radius) {
             // Hit left/right wall
             const v =
-                -90 +
-                p5.Vector.angleBetween(ball.dir, p.createVector(0, -1)) *
-                    (ball.pos.x > 0 ? 1 : -1);
+                -90 + p5.Vector.angleBetween(ball.dir, p.createVector(0, -1));
             const mag = ball.dir.mag();
             ball.dir.set(p.cos(v), p.sin(v)).mult(mag);
         } else if (ball.pos.y < ball.radius) {
@@ -241,7 +244,8 @@ export const sketch = (p: p5) => {
                 ball.point++;
                 ball.speed =
                     ball.origiSpeed +
-                    10 / (1 + 23 * Math.exp(-0.1 * ball.point));
+                    (ball.maxSpeed - ball.origiSpeed) /
+                        (1 + 23 * Math.exp(-0.1 * ball.point));
             }
         });
 
