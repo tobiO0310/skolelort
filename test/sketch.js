@@ -1,12 +1,14 @@
-// GUESS WHAT? IT CLAMPS A NUMBER WITHIN A RANGE
+/** GUESS WHAT? IT CLAMPS A NUMBER WITHIN A RANGE */
 const clamp = (val, min, max) =>
     Math.max(min, Math.min(val, max));
 
-// LOOK AT THE F**KING NAME OF THE FUNCTION
-// Basically checks if circle centrum is on either side of the rect's min and max x.
-// If it is, then clamp to that, if not then set to 0, as it's within the boundaries
-// and therefore is it closest to go straight up or down.
-// Then does the same for y.
+/** LOOK AT THE F**KING NAME OF THE FUNCTION
+ * 
+ *  Basically checks if circle centrum is on either side of the rect's min and max x.
+ *  If it is, then clamp to that, if not then set to 0, as it's within the boundaries
+ *  and therefore is it closest to go straight up or down.
+ *  Then does the same for y.
+ */
 function getVectorForCollision(
     rect,
     size,
@@ -30,7 +32,7 @@ function getVectorForCollision(
     return vec;
 }
 
-// Use vectors to test distance between circle and closest edge. (if you couldn't read the function name)
+/** Use vectors to test distance between circle and closest edge. (if you couldn't read the function name) */
 function collideRectCircleVector(
     rect,
     size,
@@ -44,10 +46,10 @@ function collideRectCircleVector(
 // Color palette:
 // https://coolors.co/palette/ccd5ae-e9edc9-fefae0-faedcd-d4a373
 
-// guess what it is (check setup for properties)
+/** guess what it is (check setup for properties) */
 let plr = {};
 
-// Color order from top to bottom: red, orange, yellow, green, blue, purple
+/** Color order from top to bottom: red, orange, yellow, green, blue, purple */
 const colorCodes = {
     0: "#F56565",
     1: "#ED8936",
@@ -59,7 +61,7 @@ const colorCodes = {
 // Totals: 10x6
 const bricks = [];
 
-// bet you can't guess what this function does
+/** Bet you can't guess what this function does */
 function refreshBricks() {
     bricks.splice(0, bricks.length); //Remove all
     for (let x = 0; x < 10; x++) {
@@ -91,7 +93,7 @@ function setup() {
     // im not gonna comment on anything in here
     angleMode(DEGREES);
     frameRate(60);
-    createCanvas(windowWidth * 0.9, windowHeight * 0.9);
+    createCanvas(windowWidth, windowHeight);
     plr = {
         pos: createVector((width * 4) / 10, (height * 9) / 10),
         size: createVector((width * 2) / 10, 10),
@@ -101,7 +103,7 @@ function setup() {
     ball = {
         pos: createVector(200, 200),
         dir: createVector(random(-0.01, 0.01), -1),
-        radius: (25 / 671.4) * height,
+        radius: (25 / (1495 * 746 / (12 * 45))) * (width * height / (12 * 45)),
         speed: 5,
         maxSpeed: 15,
         origiSpeed: 5,
@@ -112,11 +114,8 @@ function setup() {
     refreshBricks();
 };
 
-// like actually fuck p5js
-function draw() {
-    //there's too much to comment, i might do it later
-    background("#CCD5AE");
-
+/** Draws the player object */
+function DrawPlr() {
     fill("#FAEDCD");
     rect(plr.pos.x, plr.pos.y, plr.size.x, plr.size.y);
     if (keyIsPressed) {
@@ -134,7 +133,7 @@ function draw() {
             // Left arrow or A = move right
             plr.dir.set((-5 / 757.8) * width, 0);
         } else if (
-            keyIsDown(32) === true ||
+            //keyIsDown(32) === true ||
             keyIsDown(87) === true ||
             keyIsDown(UP_ARROW) === true
         ) {
@@ -147,7 +146,13 @@ function draw() {
         plr.pos.add(plr.dir);
     }
     plr.pos.set(clamp(plr.pos.x, 0, width - plr.size.x), plr.pos.y);
+}
 
+/** Draws the ball object
+ * and tests for collision between
+ * ball, walls and player object.
+ */
+function DrawBall() {
     fill("E9EDC9");
     circle(ball.pos.x, ball.pos.y, ball.radius * 2);
     if (ball.started) {
@@ -196,13 +201,27 @@ function draw() {
         ball.dir.set(newDir).normalize().mult(ball.speed);
     } else if (ball.point === 60) {
         console.log("won");
+        ball.speed = 0;
+        ball.dir.mult(ball.speed);
     }
+    line(
+        ball.pos.x,
+        ball.pos.y,
+        ball.pos.x + ball.dir.x,
+        ball.pos.y + ball.dir.y
+    );
     ball.pos.set(
         clamp(ball.pos.x, ball.radius, width - ball.radius),
         clamp(ball.pos.y, ball.radius, height - ball.radius)
     );
+}
 
-    // Draw bricks, if active, and test if collides with ball.
+/** Draws the bricks, if they're active.
+ * Then checks if ball collides with it,
+ * if it does, change ball dir, point and speed.
+ * Then turn the brick off.
+ */
+function DrawBricks() {
     for (let i = 0; i < bricks.length; i++) {
         const brick = bricks[i];
         if (brick.active === false) continue;
@@ -222,6 +241,7 @@ function draw() {
                 brick.size,
                 ball.pos
             );
+            // Shows the vector for debugging.
             line(
                 ball.pos.x,
                 ball.pos.y,
@@ -229,14 +249,28 @@ function draw() {
                 ball.pos.y + v1.y
             );
             brick.active = false;
-            ball.dir.reflect(v1);
+            console.log([ball.dir.heading(), v1.heading()]);
+            ball.dir.reflect();
+            console.log([ball.dir.heading(), v1.heading()]);
             ball.point++;
             ball.speed =
                 ball.origiSpeed +
                 (ball.maxSpeed - ball.origiSpeed) / (1 + 23 * Math.exp(-0.1 * ball.point));
+            ball.dir.normalize().mult(ball.speed);
+            console.log(ball.speed);
+            if (keyIsDown(32) === true) throw new Error();
         }
     };
+}
 
+// like actually fuck p5js
+function draw() {
+    background("#CCD5AE");
+    DrawPlr();
+    DrawBall();
+    DrawBricks();
+
+    // Point text.
     fill("#D4A373");
     textAlign(CENTER);
     textSize(height / 10);
