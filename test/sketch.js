@@ -249,16 +249,16 @@ function DrawBricks() {
                 ball.pos.y + v1.y
             );
             brick.active = false;
-            console.log([ball.dir.heading(), v1.heading()]);
-            ball.dir.reflect();
-            console.log([ball.dir.heading(), v1.heading()]);
+
+            // Reflect er forklaret via maple fil:
+            // https://edumercantec-my.sharepoint.com/:u:/g/personal/tobi371c_edu_mercantec_dk/ETAz_FQTgKJMgCz6cqhKpD4B1dgEZGEBaTzEnT2ICtRFvg?e=NEuKQs
+
+            ball.dir.reflect(v1);
             ball.point++;
             ball.speed =
                 ball.origiSpeed +
                 (ball.maxSpeed - ball.origiSpeed) / (1 + 23 * Math.exp(-0.1 * ball.point));
             ball.dir.normalize().mult(ball.speed);
-            console.log(ball.speed);
-            if (keyIsDown(32) === true) throw new Error();
         }
     };
 }
