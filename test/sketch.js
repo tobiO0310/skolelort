@@ -101,7 +101,7 @@ function setup() {
     };
     // you're a p***y for not understanding
     ball = {
-        pos: createVector(200, 200),
+        pos: createVector(0, 0),
         dir: createVector(random(-0.01, 0.01), -1),
         radius: (25 / (1495 * 746 / (12 * 45))) * (width * height / (12 * 45)),
         speed: 5,
