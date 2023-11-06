@@ -67,14 +67,14 @@ function refreshBricks() {
     for (let x = 0; x < 10; x++) {
         for (let y = 0; y < 6; y++) {
             // x: 2/20 - 19/20
-            // width/20(2 + 1.75*x)
+            // width/20(2 + 7/4*x)
             // y: 2/10-5/10
-            // height/10(2+.45*x)
+            // height/10(2+9/20*x)
 
             bricks[bricks.length] = {
                 pos: createVector(
-                    (width / 20) * (1 + 1.75 * x),
-                    (height / 10) * (2 + 0.45 * y)
+                    (width / 20) * (1 + 7 / 4 * x),
+                    (height / 10) * (2 + 9 / 20 * y)
                 ),
                 size: createVector(width / 12, height / 45),
                 active: true,
@@ -82,7 +82,6 @@ function refreshBricks() {
             };
         }
     }
-    console.log(bricks);
 }
 
 // dumbass <3 (check setup for properties)
@@ -107,6 +106,12 @@ function setup() {
         speed: 5,
         maxSpeed: 15,
         origiSpeed: 5,
+        speedFunc: function () {
+            return this.origiSpeed * (
+                (this.maxSpeed / this.origiSpeed) ** (this.point / bricks.length)
+            );
+        },
+        life: 3,
         point: 0,
         started: false,
     };
@@ -125,15 +130,15 @@ function DrawPlr() {
             keyIsDown(68) === true
         ) {
             // Right Arrow or D = move left
-            plr.dir.set((5 / 757.8) * width, 0);
+            plr.dir.set((5 / (7578 / 10)) * width, 0);
         } else if (
             keyIsDown(LEFT_ARROW) === true ||
             keyIsDown(65) === true
         ) {
             // Left arrow or A = move right
-            plr.dir.set((-5 / 757.8) * width, 0);
+            plr.dir.set((-5 / (7578 / 10)) * width, 0);
         } else if (
-            //keyIsDown(32) === true ||
+            keyIsDown(32) === true ||
             keyIsDown(87) === true ||
             keyIsDown(UP_ARROW) === true
         ) {
@@ -154,8 +159,7 @@ function DrawPlr() {
  */
 function DrawBall() {
     fill("E9EDC9");
-    circle(ball.pos.x, ball.pos.y, ball.radius * 2);
-    if (ball.started) {
+    if (ball.started && ball.life > 0) {
         ball.pos.add(ball.dir)
     } else {
         ball.pos.set(
@@ -163,25 +167,26 @@ function DrawBall() {
             plr.pos.y - ball.radius * 2
         );
     }
+    circle(ball.pos.x, ball.pos.y, ball.radius * 2);
     if (ball.pos.x < ball.radius || ball.pos.x > width - ball.radius) {
         // Hit left/right wall
-        const v = -90 +
+        /* const v = -90 +
             p5.Vector.angleBetween(ball.dir, createVector(0, -1));
         const mag = ball.dir.mag();
-        ball.dir.set(cos(v), sin(v)).mult(mag);
+        ball.dir.set(cos(v), sin(v)).mult(mag); */
+        ball.dir.reflect(createVector(1, 0));
     } else if (ball.pos.y < ball.radius) {
         // Hit top
-        const v = p5.Vector.angleBetween(ball.dir, createVector(1, 0));
+        /* const v = p5.Vector.angleBetween(ball.dir, createVector(1, 0));
         const mag = ball.dir.mag();
-        ball.dir.set(cos(v), sin(v)).mult(mag);
+        ball.dir.set(cos(v), sin(v)).mult(mag); */
+        ball.dir.reflect(createVector(0, 1))
     } else if (ball.pos.y > height - ball.radius) {
         // Hit bottom
         ball.started = false;
-        ball.speed = ball.origiSpeed;
+        ball.life--;
         ball.dir.set(random(-0.01, 0.01), -1);
         ball.dir.normalize().mult(ball.speed);
-        ball.point = 0;
-        refreshBricks();
     } else if (
         collideRectCircleVector(
             plr.pos,
@@ -255,12 +260,38 @@ function DrawBricks() {
 
             ball.dir.reflect(v1);
             ball.point++;
-            ball.speed =
-                ball.origiSpeed +
-                (ball.maxSpeed - ball.origiSpeed) / (1 + 23 * Math.exp(-0.1 * ball.point));
+            ball.speed = ball.speedFunc();
+            console.log(ball.speed);
             ball.dir.normalize().mult(ball.speed);
         }
     };
+}
+
+/** Draws the different texts */
+function DrawText() {
+    if (ball.life > 0 && ball.point < bricks.length) {
+        // Point text.
+        fill("#D4A373");
+        textAlign(CENTER);
+        textSize(height / 10);
+        text(
+            `Point: ${ball.point}`,
+            width * (8 / 10),
+            height / 10
+        );
+
+        // Life text.
+        fill("#D4A373");
+        textAlign(CENTER);
+        textSize(height / 20);
+        text(
+            `Lives: ${ball.life}`,
+            width * (8 / 10),
+            height * (1.5 / 10)
+        );
+    } else if (ball.point === bricks.length) {
+
+    }
 }
 
 // like actually fuck p5js
@@ -269,14 +300,5 @@ function draw() {
     DrawPlr();
     DrawBall();
     DrawBricks();
-
-    // Point text.
-    fill("#D4A373");
-    textAlign(CENTER);
-    textSize(height / 10);
-    text(
-        `Point: ${ball.point}`,
-        width * (8 / 10),
-        height * (1.5 / 10)
-    );
+    DrawText();
 }
