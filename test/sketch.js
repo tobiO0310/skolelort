@@ -64,8 +64,8 @@ const bricks = [];
 /** Bet you can't guess what this function does */
 function refreshBricks() {
     bricks.splice(0, bricks.length); //Remove all
-    for (let x = 0; x < 10; x++) {
-        for (let y = 0; y < 6; y++) {
+    for (let x = 0; x < 1; x++) {
+        for (let y = 0; y < 1; y++) {
             // x: 2/20 - 19/20
             // width/20(2 + 7/4*x)
             // y: 2/10-5/10
@@ -121,6 +121,7 @@ function setup() {
 
 /** Draws the player object */
 function DrawPlr() {
+    if (ball.life <= 0 || ball.point >= bricks.length) return;
     fill("#FAEDCD");
     rect(plr.pos.x, plr.pos.y, plr.size.x, plr.size.y);
     if (keyIsPressed) {
@@ -158,6 +159,7 @@ function DrawPlr() {
  * ball, walls and player object.
  */
 function DrawBall() {
+    if (ball.life <= 0 || ball.point >= bricks.length) return;
     fill("E9EDC9");
     if (ball.started && ball.life > 0) {
         ball.pos.add(ball.dir)
@@ -167,9 +169,7 @@ function DrawBall() {
             plr.pos.y - ball.radius * 2
         );
     }
-    if (ball.life > 0 && ball.point < bricks.length) {
-        circle(ball.pos.x, ball.pos.y, ball.radius * 2);
-    }
+    circle(ball.pos.x, ball.pos.y, ball.radius * 2);
     if (ball.pos.x < ball.radius || ball.pos.x > width - ball.radius) {
         // Hit left/right wall
         /* const v = -90 +
@@ -206,9 +206,6 @@ function DrawBall() {
             )
         );
         ball.dir.set(newDir).normalize().mult(ball.speed);
-    } else if (ball.point === 60) {
-        ball.speed = 0;
-        ball.dir.mult(ball.speed);
     }
     line(
         ball.pos.x,
@@ -228,6 +225,7 @@ function DrawBall() {
  * Then turn the brick off.
  */
 function DrawBricks() {
+    if (ball.life <= 0 || ball.point >= bricks.length) return;
     for (let i = 0; i < bricks.length; i++) {
         const brick = bricks[i];
         if (brick.active === false) continue;
