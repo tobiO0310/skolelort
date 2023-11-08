@@ -167,7 +167,9 @@ function DrawBall() {
             plr.pos.y - ball.radius * 2
         );
     }
-    circle(ball.pos.x, ball.pos.y, ball.radius * 2);
+    if (ball.life > 0 && ball.point < bricks.length) {
+        circle(ball.pos.x, ball.pos.y, ball.radius * 2);
+    }
     if (ball.pos.x < ball.radius || ball.pos.x > width - ball.radius) {
         // Hit left/right wall
         /* const v = -90 +
@@ -205,7 +207,6 @@ function DrawBall() {
         );
         ball.dir.set(newDir).normalize().mult(ball.speed);
     } else if (ball.point === 60) {
-        console.log("won");
         ball.speed = 0;
         ball.dir.mult(ball.speed);
     }
@@ -290,7 +291,25 @@ function DrawText() {
             height * (1.5 / 10)
         );
     } else if (ball.point === bricks.length) {
-
+        // Won text.
+        fill("#D4A373");
+        textAlign(CENTER);
+        textSize(height / 5);
+        text(
+            "You won!",
+            width * (5 / 10),
+            height * (5 / 10)
+        );
+    } else if (ball.life <= 0) {
+        // Lost text.
+        fill("#D4A373");
+        textAlign(CENTER);
+        textSize(height / 5);
+        text(
+            "You lost!",
+            width * (5 / 10),
+            height * (5 / 10)
+        );
     }
 }
 
