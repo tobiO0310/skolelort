@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --host localhost --open",
-    "start:public": "webpack server --open"
+    "start:public": "webpack server --open",
+    "dev": "ts-node --esm src/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,8 @@
     "@types/p5": "^1.7.0",
     "html-webpack-plugin": "^5.5.3",
     "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
+    "tsc": "^2.0.4",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.9.0",
