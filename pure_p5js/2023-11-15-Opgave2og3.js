@@ -13,45 +13,6 @@ function Opgave2(numbers) {
     text(numbers[1], width / 2, height / 2);
 }
 
-/** Kombinere to arrays, som hver er sorteret */
-function merge(left, right) {
-    const sortedArr = []
-    while (left.length && right.length) { // Så længde en af dem indeholder noget
-        if (left[0] < right[0]) {
-            sortedArr.push(left.shift())
-        } else {
-            sortedArr.push(right.shift())
-        }
-    }
-    return [...sortedArr, ...left, ...right]
-}
-
-/** Merge Sort */
-function mergeSort(arr) {
-    // Enhver array med længde 0 eller 1 er sorteret.
-    if (arr.length < 2) {
-        return arr;
-    }
-
-    // Find mitterværdien og split
-    const mid = Math.floor(arr.length / 2);
-
-    // "Recursion" med venstre og højre side af arrayet
-    const left = mergeSort(arr.slice(0, mid))
-    const right = mergeSort(arr.splice(mid))
-
-    return merge(left, right)
-}
-
-function randomNumbers(min = 0, max = 100, amount = 10, decimals = false){
-    const numbers = [];
-    for(let i = 0; i < amount; i++){
-        const num = random(min, max);
-        numbers.push(decimals ? num : num << 0)
-    }
-    return numbers
-}
-
 /** Array of three numbers to sort */
 function flowChartSort([a, b, c]) {
     const sorted = [];
@@ -104,13 +65,8 @@ function flowChartSort2(arr) {
     return sorted;
 }
 
-/**
- * 
- * @param {[number]} numbers 
- */
 function Opgave3(numbers) {
     textSize(30);
-    //const sorted = mergeSort(numbers);
     const sorted = flowChartSort2(numbers);
 
     text(sorted[0], width / 2, height / 4 - 30 / 2);
@@ -123,16 +79,26 @@ function Opgave3(numbers) {
 function setup() {
     createCanvas(windowWidth, windowHeight);
     textAlign(CENTER);
-    frameRate(60)
+    frameRate(1);
 }
 
 function draw() {
     background("#C4A998");
     fill("#880808")
     //Opgave2([10, 5]);
-    Opgave3([
+    /* Opgave3([
         random(0, 100) << 0,
         random(0, 100) << 0,
         random(0, 100) << 0
-    ]);
+    ]); */
+    
+    const sorted = selectionSort(randomNumbers(
+        0, // Min
+        100, // Max
+        10 // Antal
+    ))
+    textSize(30)
+    sorted.forEach((val, i) => {
+        text(val, width / 2, height / 4 + 30 * i);
+    })
 }
