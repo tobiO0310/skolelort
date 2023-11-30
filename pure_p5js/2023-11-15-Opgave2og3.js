@@ -84,7 +84,7 @@ function setup() {
 
 function draw() {
     background("#C4A998");
-    fill("#880808")
+    fill("#880808");
     //Opgave2([10, 5]);
     /* Opgave3([
         random(0, 100) << 0,
@@ -96,9 +96,9 @@ function draw() {
         0, // Min
         100, // Max
         10 // Antal
-    ))
-    textSize(30)
+    ));
+    textSize(30);
     sorted.forEach((val, i) => {
         text(val, width / 2, height / 4 + 30 * i);
-    })
+    });
 }
