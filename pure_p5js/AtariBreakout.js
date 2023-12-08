@@ -1,7 +1,3 @@
-/** GUESS WHAT? IT CLAMPS A NUMBER WITHIN A RANGE */
-const clamp = (val, min, max) =>
-    Math.max(min, Math.min(val, max));
-
 /** LOOK AT THE F**KING NAME OF THE FUNCTION
  * 
  *  Basically checks if circle centrum is on either side of the rect's min and max x.

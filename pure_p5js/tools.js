@@ -23,6 +23,9 @@ window.orderedNumbers = function (min = 0, max = 100, shuffle = false) {
     return arr;
 }
 
+window.clamp = (val, min, max) =>
+    Math.max(min, Math.min(val, max));
+
 window.binarySearch = binarySearch;
 for (let i in sorting) {
     window[i] = sorting[i];
