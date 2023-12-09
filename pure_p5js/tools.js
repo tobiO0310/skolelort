@@ -25,6 +25,7 @@ window.orderedNumbers = function (min = 0, max = 100, shuffle = false) {
 
 window.clamp = (val, min, max) =>
     Math.max(min, Math.min(val, max));
+window.toNearestDecimal = (val, dec) => Math.round(val * (10 ** dec)) / (10 ** dec);
 
 window.binarySearch = binarySearch;
 for (let i in sorting) {

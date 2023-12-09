@@ -203,7 +203,7 @@ function DrawBall() {
         );
         ball.dir.set(newDir).normalize().mult(ball.speed);
     }
-    line(
+    guideLine(
         ball.pos.x,
         ball.pos.y,
         ball.pos.x + ball.dir.x,
@@ -242,7 +242,7 @@ function DrawBricks() {
                 ball.pos
             );
             // Shows the vector for debugging.
-            line(
+            guideLine(
                 ball.pos.x,
                 ball.pos.y,
                 ball.pos.x + v1.x,
