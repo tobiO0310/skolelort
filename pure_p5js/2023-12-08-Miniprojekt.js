@@ -33,13 +33,13 @@ function baggrund() {
     rect(0, height * 3 / 4, width, height / 4);
 
 
-    // Hastighed og retnings tekst
+    // hastighed og retnings tekst
     fill(0);
-    textSize(50);
+    textSize(50 * width / 1495);
     textAlign(LEFT);
     text(`Retning: ${angle}°`, width / 64, height / 12);
     text(`Hastighed: (${toNearestDecimal(cos(angle) * (hastighed / 10), 3)
-        }, ${toNearestDecimal(sin(angle) * (hastighed / 10), 3)}) m/s`, width / 64, height * 11 / 64);
+        } m/s, ${toNearestDecimal(sin(angle) * (hastighed / 10), 3)} m/s) / ${hastighed / 10} m/s`, width / 64, height / 12 + 50 * width / 1495);
     textSize(12);
 }
 
@@ -60,25 +60,35 @@ function kanon() {
     translate(-width / 12, -height * 41 / 48);
 }
 
+/** Laver det fysiske simulation, ved hjælp af deltaTid */
 function simBold() {
     circle(ball.pos.x, ball.pos.y, width / 25);
+    const ratio = (width / 4) / 5;
+    const dt = deltaTime / 1000;
 
     if (ball.pos.y < height * 41 / 48) {
-        ball.pos.add(ball.dir);
-        ball.dir.y += tyndgekraft * deltaTime / 1000;
-    } else {
-        ball.dir.set(0, 0);
+        ball.pos.x += ball.dir.x * ratio * dt;
+        ball.pos.y += ball.dir.y * ratio * dt;
+        ball.dir.y += tyndgekraft * dt;
     }
 }
 
+/** Laver et lidt gennemsigtlig stiplet linje for at sigte */
 function guideLine() {
-    const SH = hastighed/10;
+    const ratio = (width / 4) / 5;
+    const x0 = width / 12 + cos(angle) * width / 4;
+    const v0x = cos(angle) * (hastighed / 10 * ratio);
+    const v0y = -sin(angle) * (hastighed / 10 * ratio);
+    const y0 = height * 41 / 48 - sin(angle) * width / 4;
 
-    for(let i = ball.pos.x; i < width; i+=2){
-        circle(i,i)
+    fill(0, 0, 0, 100);
+    for (let i = 0; i < 1000; i++) {
+        const t = i / 50;
+        const y = (1 / 2) * (tyndgekraft * ratio) * (t ** 2) + (v0y * t) + y0;
+        if (y > height * 41 / 48) break;
+        circle(x0 + v0x * t, y, 5)
     }
 
-    fill(0);
 }
 
 /** Check hvilken knap der er trykket
@@ -124,6 +134,7 @@ function draw() {
             width / 12 + cos(angle) * width / 4,
             height * 41 / 48 - sin(angle) * width / 4
         )
-        //guideLine();
     }
+
+    guideLine();
 }
