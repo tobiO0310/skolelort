@@ -1,11 +1,21 @@
 let ball = {};
-let tyndgekraft = 9.82;
-let angle = 45;
-let hastighed = 10; // Er ganget med 10.
+let tyndgekraft = 9.82; // (m/s)
+let angle = 45; // grader
+let hastighed = 10; // Er ganget med 10. (m/s)
 let started = false;
+
+/** Gør som den heder */
+const toNearestDecimal = (val, dec) => Math.round(val * (10 ** dec)) / (10 ** dec);
+/** Sætter en nedre og øvere grænse for hvad værdien må være.
+ *  Hvis val er inden for grænsen, retunere val.
+ *  Ellers retunere hhv. den mindste eller øverste grænse-værdi
+ */
+const clamp = (val, min, max) =>
+    Math.max(min, Math.min(val, max));
 
 function setup() {
     ball = {
+        // m/s
         pos: createVector(0, 0),
         dir: createVector(0, 0)
     };
@@ -64,6 +74,7 @@ function kanon() {
 function simBold() {
     fill("#a0b00c");
     circle(ball.pos.x, ball.pos.y, width / 25);
+    // pixels / meter
     const ratio = 373.75 / 5;
     const dt = deltaTime / 1000;
 
@@ -76,6 +87,7 @@ function simBold() {
 
 /** Laver et lidt gennemsigtlig stiplet linje for at sigte */
 function guideLine() {
+    // pixels / meter
     const ratio = 373.75 / 5;
     const x0 = width / 12 + cos(angle) * width / 4;
     const v0x = cos(angle) * (hastighed / 10 * ratio);
@@ -115,6 +127,7 @@ function gradOgHast() {
 function draw() {
     baggrund();
     kanon();
+    guideLine();
 
     // Hvis mellemrum er trykket, start
     if (keyIsDown(32) && started != true) {
@@ -136,6 +149,4 @@ function draw() {
             height * 41 / 48 - sin(angle) * width / 4
         )
     }
-
-    guideLine();
 }
