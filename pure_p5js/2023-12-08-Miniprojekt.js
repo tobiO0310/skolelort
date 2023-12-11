@@ -62,8 +62,9 @@ function kanon() {
 
 /** Laver det fysiske simulation, ved hjælp af deltaTid */
 function simBold() {
+    fill("#a0b00c");
     circle(ball.pos.x, ball.pos.y, width / 25);
-    const ratio = (width / 4) / 5;
+    const ratio = 373.75 / 5;
     const dt = deltaTime / 1000;
 
     if (ball.pos.y < height * 41 / 48) {
@@ -75,7 +76,7 @@ function simBold() {
 
 /** Laver et lidt gennemsigtlig stiplet linje for at sigte */
 function guideLine() {
-    const ratio = (width / 4) / 5;
+    const ratio = 373.75 / 5;
     const x0 = width / 12 + cos(angle) * width / 4;
     const v0x = cos(angle) * (hastighed / 10 * ratio);
     const v0y = -sin(angle) * (hastighed / 10 * ratio);
