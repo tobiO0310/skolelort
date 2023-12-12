@@ -25,6 +25,7 @@ function setup() {
 
 /** Tegn gradient baggrund og jorden */
 function baggrund() {
+    // Lav en sky-look graident.
     strokeWeight(1);
     for (let y = 0; y < height * 3 / 4; y++) {
         // lerpColor = mix disse farver
@@ -43,7 +44,7 @@ function baggrund() {
     rect(0, height * 3 / 4, width, height / 4);
 
 
-    // hastighed og retnings tekst
+    // Hastighed og retnings tekst
     fill(0);
     textSize(50 * width / 1495);
     textAlign(LEFT);
@@ -76,8 +77,10 @@ function simBold() {
     circle(ball.pos.x, ball.pos.y, width / 25);
     // pixels / meter
     const ratio = 373.75 / 5;
+    // Fordi jeg er sej
     const dt = deltaTime / 1000;
 
+    // Hvis bolden er over jorden, tilføj til position og hastighed.
     if (ball.pos.y < height * 41 / 48) {
         ball.pos.x += ball.dir.x * ratio * dt;
         ball.pos.y += ball.dir.y * ratio * dt;
@@ -125,6 +128,7 @@ function gradOgHast() {
 }
 
 function draw() {
+    // Baggrund, kanon og stiplet linje. (Check deres funktion ovenfor)
     baggrund();
     kanon();
     guideLine();
@@ -139,11 +143,13 @@ function draw() {
         ball.dir.set(0, 0);
     }
 
+    // Simulere bolden hvis det er started, ellers check for ændring i hastighed og grader.
     if (started) {
         simBold();
     } else {
         gradOgHast();
 
+        // Sæt boldens position til enden af kanonen
         ball.pos.set(
             width / 12 + cos(angle) * width / 4,
             height * 41 / 48 - sin(angle) * width / 4
