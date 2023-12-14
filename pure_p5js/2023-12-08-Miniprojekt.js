@@ -1,8 +1,14 @@
 let ball = {};
-let tyndgekraft = 9.82; // (m/s)
+const tyndgekraft = 9.82; // (m/s)
 let angle = 45; // grader
 let hastighed = 10; // Er ganget med 10. (m/s)
 let started = false;
+let ramtVandet = 0;
+
+let pondX; // Vandets x
+let bomb; // Billede af bombe
+let splash; // Billede af vandsplash
+let fish; // Billede af fisk
 
 /** Gør som den heder */
 const toNearestDecimal = (val, dec) => Math.round(val * (10 ** dec)) / (10 ** dec);
@@ -13,6 +19,13 @@ const toNearestDecimal = (val, dec) => Math.round(val * (10 ** dec)) / (10 ** de
 const clamp = (val, min, max) =>
     Math.max(min, Math.min(val, max));
 
+// Læser billederne
+function preload() {
+    bomb = loadImage("bomb.webp");
+    splash = loadImage("Water_splash.png");
+    fish = loadImage("Item_Fish.webp");
+}
+
 function setup() {
     ball = {
         // m/s
@@ -21,6 +34,7 @@ function setup() {
     };
     angleMode(DEGREES);
     createCanvas(windowWidth, windowHeight);
+    pondX = random(width / 2, width * 7 / 8);
 }
 
 /** Tegn gradient baggrund og jorden */
@@ -39,10 +53,14 @@ function baggrund() {
         );
         line(0, y, width, y);
     }
+    // Jorden
     fill("#388004");
     strokeWeight(0);
     rect(0, height * 3 / 4, width, height / 4);
 
+    // Vandet
+    fill("#5d97e7");
+    ellipse(pondX, height * 7 / 8, width / 5, height / 8);
 
     // Hastighed og retnings tekst
     fill(0);
@@ -73,8 +91,11 @@ function kanon() {
 
 /** Laver det fysiske simulation, ved hjælp af deltaTid */
 function simBold() {
-    fill("#a0b00c");
-    circle(ball.pos.x, ball.pos.y, width / 25);
+    if (ramtVandet < 0.5) {
+        fill("#a0b00c");
+        circle(ball.pos.x, ball.pos.y, width / 25);
+        image(bomb, ball.pos.x - width / 30, ball.pos.y - width / 30, width / 15, width / 15);
+    }
     // pixels / meter
     const ratio = 373.75 / 5;
     // Fordi jeg er sej
@@ -85,6 +106,20 @@ function simBold() {
         ball.pos.x += ball.dir.x * ratio * dt;
         ball.pos.y += ball.dir.y * ratio * dt;
         ball.dir.y += tyndgekraft * dt;
+    } else if (pondX - width / 10 + width / 25 < ball.pos.x && ball.pos.x < pondX + width / 10 - width / 25) {
+        ramtVandet += dt;
+        if (0 < ramtVandet && ramtVandet < 1) {
+            image(splash, ball.pos.x - width / 10, ball.pos.y - width / 10 - width / 40, width / 5, width / 5);
+        }
+        if (0.25 < ramtVandet) {
+            image(fish, ball.pos.x - width * 2 / 15, ball.pos.y - width / 6, width / 10, width / 10);
+        }
+        if (0.5 < ramtVandet) {
+            image(fish, ball.pos.x - width / 20, ball.pos.y - width / 6, width / 10, width / 10);
+        }
+        if (0.75 < ramtVandet) {
+            image(fish, ball.pos.x - width / 10 + width * 2 / 15, ball.pos.y - width / 6, width / 10, width / 10);
+        }
     }
 }
 
@@ -102,7 +137,7 @@ function guideLine() {
         const t = i / 50;
         const y = (1 / 2) * (tyndgekraft * ratio) * (t ** 2) + (v0y * t) + y0;
         if (y > height * 41 / 48) break;
-        circle(x0 + v0x * t, y, 5)
+        circle(x0 + v0x * t, y, 5);
     }
 
 }
@@ -135,11 +170,15 @@ function draw() {
 
     // Hvis mellemrum er trykket, start
     if (keyIsDown(32) && started != true) {
-        started = true
+        started = true;
         ball.dir.set(cos(angle), -sin(angle)).mult(hastighed / 10);
         // Hvis enter er trykket, genstart.
-    } else if (keyIsDown(ENTER)) {
-        started = false
+    } else if (keyIsDown(ENTER) && started != false) {
+        started = false;
+        if (0 < ramtVandet) {
+            pondX = random(width / 2, width * 7 / 8);
+            ramtVandet = 0;
+        }
         ball.dir.set(0, 0);
     }
 
@@ -153,6 +192,6 @@ function draw() {
         ball.pos.set(
             width / 12 + cos(angle) * width / 4,
             height * 41 / 48 - sin(angle) * width / 4
-        )
+        );
     }
 }
