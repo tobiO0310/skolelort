@@ -1,7 +1,7 @@
 let ball = {};
 const tyndgekraft = 9.82; // (m/s)
 let angle = 45; // grader
-let hastighed = 10; // Er ganget med 10. (m/s)
+let hastighed = 10; // Er ganget med 10, på grund af decimal tal. (m/s)
 let started = false;
 let ramtVandet = 0;
 
@@ -33,7 +33,12 @@ function setup() {
         dir: createVector(0, 0)
     };
     angleMode(DEGREES);
-    createCanvas(windowWidth, windowHeight);
+
+    // Lav noget magi med aspect ratio
+    const ww = 2 * windowHeight;
+    const wh = windowWidth / 2;
+
+    createCanvas(Math.min(ww, windowWidth), Math.min(wh, windowHeight));
     pondX = random(width / 2, width * 7 / 8);
 }
 
@@ -76,7 +81,7 @@ function baggrund() {
 function kanon() {
     // Sæt ny origin og retning
     translate(width / 12, height * 41 / 48);
-    rotate(-angle);
+    rotate(-angle); 
 
     // Tegn kanon
     fill(0);
@@ -158,6 +163,7 @@ function gradOgHast() {
     if (keyIsDown(RIGHT_ARROW)) {
         angle--;
     }
+    // Sørger for at den ikke bliver højere end maks og lavere end min.
     angle = clamp(angle, 0, 90);
     hastighed = clamp(hastighed, 10, 100);
 }
