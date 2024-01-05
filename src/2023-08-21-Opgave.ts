@@ -1,5 +1,5 @@
 // [Imports]
-import * as p5 from "p5";
+import p5 from "p5";
 
 // [Global-Scope]
 const rect: {

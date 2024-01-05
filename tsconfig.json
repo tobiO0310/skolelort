@@ -6,6 +6,9 @@
         "target": "ESNext",
         "jsx": "react",
         "allowJs": true,
-        "moduleResolution": "node"
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
     }
 }
